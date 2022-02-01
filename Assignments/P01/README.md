@@ -13,7 +13,7 @@ Starting from the west most city of the US all the way to the right most.
 | :---: | --------------- | -------------------------------------------------- |
 |   1   | Main.py         | Main driver of the program the produces output     |
 |   2   | cities.json     | Infile that contains data                          |
-|   3   | | Helper class that assists with textures and images |
+|   3   | output.geojson  | Outfile                                            |
 
 ### Instructions
 
