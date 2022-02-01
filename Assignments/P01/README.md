@@ -17,19 +17,9 @@ Starting from the west most city of the US all the way to the right most.
 
 ### Instructions
 
-- Make sure you install library `blahblah.py`
-- My program expects two parameters to be placed on the command line when you run the program.
-- Parameters `<input file> <number of players>`
-- The input file should be formatted with a players name and age on a seperate line:
+- run the main.py file 
 
-+------------+
-| name1 age1 |
-| name2 age2 |
-| etc...     |
-+------------+
-
-- Example Command:
-    - `python <code> <input file> <num players>`
-    - `python main.py input.txt 3`
+ GeoJson Gist: 
  https://gist.github.com/jbwilliams1006/333b965dcd70f81f84c5781751357af4.js
+ 
 
