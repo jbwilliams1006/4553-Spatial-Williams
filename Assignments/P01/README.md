@@ -20,6 +20,6 @@ Starting from the west most city of the US all the way to the right most.
 - run the main.py file 
 
  GeoJson Gist: 
- https://gist.github.com/jbwilliams1006/333b965dcd70f81f84c5781751357af4.js
+http://geojson.io/#id=gist:jbwilliams1006/333b965dcd70f81f84c5781751357af4&map=4/39.25/-96.47
  
 
