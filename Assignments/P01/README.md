@@ -13,7 +13,7 @@ Starting from the west most city of the US all the way to the right most.
 | :---: | --------------- | -------------------------------------------------- |
 |   1   | [Main.py](https://github.com/jbwilliams1006/4553-Spatial-Williams/blob/main/Assignments/P01/main.py)         | Main driver of the program the produces output     |
 |   2   | [cities.json](https://github.com/jbwilliams1006/4553-Spatial-Williams/blob/main/Assignments/P01/cities.json)    | Infile that contains data                          |
-|   3   | output.geojson  | Outfile                                            |
+|   3   | [output.geojson](https://github.com/jbwilliams1006/4553-Spatial-Williams/blob/main/Assignments/P01/output.geojson)  | Outfile                                            |
 
 ### Instructions
 
