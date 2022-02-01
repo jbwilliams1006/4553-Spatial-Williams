@@ -31,4 +31,5 @@ Starting from the west most city of the US all the way to the right most.
 - Example Command:
     - `python <code> <input file> <num players>`
     - `python main.py input.txt 3`
+ https://gist.github.com/jbwilliams1006/333b965dcd70f81f84c5781751357af4.js
 
