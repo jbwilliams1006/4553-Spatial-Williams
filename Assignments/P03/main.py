@@ -5,6 +5,12 @@ import numpy as np
 from numpy import sort
 from shapely.geometry import Point
 
+
+import matplotlib.pyplot as plt
+from shapely.ops import unary_union
+from geovoronoi import voronoi_regions_from_coords, points_to_coords
+from geovoronoi.plotting import subplot_for_map, plot_voronoi_polys_with_points_in_area
+
 with open('cities.json') as f:
     cities = json.load(f)
 
