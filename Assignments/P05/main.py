@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
+
 
 from helperClass import HelpClass
 #loads the API

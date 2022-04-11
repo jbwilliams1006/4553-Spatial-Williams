@@ -2,7 +2,6 @@ import json
 import geopandas
 from shapely.geometry import Polygon
 import math
-from rich import print
 
 
 class helper:
