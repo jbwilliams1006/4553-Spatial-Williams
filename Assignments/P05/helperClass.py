@@ -2,12 +2,11 @@ import json
 import geopandas
 from shapely.geometry import Polygon
 import math
-from rich import print
 
 
-class helper:
+class helperclass:
     def __init__(self):
-        with open ('continents.json') as f:
+        with open ('/Users/josh/4553-Spatial-Williams/Assignments/P05/continents.json') as f:
             self.worldData = json.load(f)
         self.output = open('output.geojson','w')
 
@@ -78,6 +77,30 @@ class helper:
                 
 
         return multi[index][0]
+
+    def getDirection(self, Country1, Country2):
+        country1 =  getCenter(Country1)
+        country2 =  getCenter(Country2)
+
+        if country1[0] < country2[0] and country1[1] < country2[1]:
+            direction = 'South-West'
+        elif country1[0] < country2[0] and country1[1] > country2[1]:
+            direction = 'North-West'
+        elif country1[0] > country2[0] and country1[1] > country2[1]:
+            direction = 'North-East'
+        elif country1[0] > country2[0] and country1[1] < country2[1]:
+            direction = 'South-East'
+        else:
+            if country1[0] == country2[0] and country1[1] < country2[1]:
+                direction = 'South'
+            elif country1[0] == country2[0] and country1[1] > country2[1]:
+                direction = 'Noth'
+            elif country1[0] < country2[0] and country1[1] == country2[1]:
+                direction = 'East'
+            elif country1[0] > country2[0] and country1[1] == country2[1]:
+                direction = 'West'
+
+        return direction
 
     # Outputs data 
     def GeoPolygon(self,name):

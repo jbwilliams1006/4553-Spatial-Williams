@@ -4,14 +4,16 @@ import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 
 
-from helperClass import HelpClass
+from helperClass import helperclass
 #loads the API
 if __name__ == '__main__':
     uvicorn.run("Main_API:api",host="127.0.0.1", port=8080, log_level="debug", reload=True)
 
 #Starts api
 api = FastAPI()
-helpclass = HelpClass()
+helpclass = helperclass()
+
+origins = ["*"]
 
 api.add_middleware(
     CORSMiddleware,

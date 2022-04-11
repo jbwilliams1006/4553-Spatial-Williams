@@ -4,7 +4,7 @@ from shapely.geometry import Polygon
 import math
 
 
-class helper:
+class helperClass:
     def __init__(self):
         with open ('continents.json') as f:
             self.worldData = json.load(f)
