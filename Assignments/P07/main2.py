@@ -1,7 +1,8 @@
 from quadTree import *
 import pygame
 from random import randint 
-
+from pygame.locals import *
+import sys
 import os
   
 # Get the size
@@ -21,6 +22,7 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption('QuadTree')
 radius = 3
 
+
 def genPoints(bbox, x):
     points  = []
     for p in range(x):
@@ -29,14 +31,24 @@ def genPoints(bbox, x):
         points.append((x,y))
     return points
 
+
+def pt2poly(x: float, y: float):
+    poly = []
+    poly.append([x, y])
+    poly.append([x - 0.1, y])
+    poly.append([x - 0.1, y - 0.1])
+    poly.append([x, y - 0.1])
+    poly.append([x, y])
+    return poly
+
+
 def highlightPoints(foundPoints):
         pygame.draw.circle(screen,(255,255,255),foundPoints,radius+3)
 
-#Initializes the moving rectangle
-Rectangle = pygame.Rect(0, 0, 100, 100)
+
 if __name__=='__main__':
 
-    print((size[0]//2,size[1]//2,size[0],size[1]))
+    #print((size[0]//2,size[1]//2,size[0],size[1]))
 
     bbox = Rect(size[0]//2,size[1]//2,size[0],size[1])
     
@@ -67,7 +79,8 @@ if __name__=='__main__':
 
       #Fills the screen with Maroon color
         screen.fill((128,0,0))
-        
+        for p in points:   
+            pygame.draw.circle(screen,(255,215,0),p,radius+3)
         # Check for event if user has pushed
         # any event in queue
         for event in pygame.event.get():
@@ -78,23 +91,27 @@ if __name__=='__main__':
                 running = False
 
       #Creates the rectangle 
-        pygame.draw.rect(screen,(0,0,0),Rectangle,3)
-        for p in points:
-          #If point in rectangle highlight
-          if Rectangle.collidepoint(p):
-            highlightPoints(p)
-            print(p)
-          else:
-            pygame.draw.circle(screen,(255,215,0),p,radius+3)
+      #Checks if mouse is pressed
+        if event.type == pygame.MOUSEBUTTONDOWN:
+          pressed = (pygame.mouse.get_pos()) 
+            #Initializes the clicked rectangle
+          rectangle_main = pygame.Rect(int(pressed[0]), int(pressed[1]),  int(100), int(100))
+            #   print(pressed)
+          pygame.draw.rect(screen,(0,0,0),rectangle_main,3)
+          for p in points:
+            #If point in rectangle highlight
+            if rectangle_main.collidepoint(p):
+              highlightPoints(p)
+              print(p)
 
-        #Moves rectangle to the right in row wise fashion
-        Rectangle.move_ip(6,0)
+        # #Moves rectangle to the right in row wise fashion
+        # Rectangle.move_ip(6,0)
       
-        if Rectangle.right > x:
-            Rectangle.move_ip(-x,100)
+        # if Rectangle.right > x:
+        #     Rectangle.move_ip(-x,100)
           
-        if Rectangle.bottom > y:
-            Rectangle.move_ip(-x,-y)
+        # if Rectangle.bottom > y:
+        #     Rectangle.move_ip(-x,-y)
           
         pygame.time.delay(40)
 
