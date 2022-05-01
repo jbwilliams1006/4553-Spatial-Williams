@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Bootleg Wordle GAME!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/98mprice/PSone.css@master/PSone.min.css">
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+    <link href="data:image/x-icon;base64,AAABAAEAEBAAAAEACABoBQAAFgAAACgAAAAQAAAAIAAAAAEACAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAABwD5AAEA8QAGAAAAjqgBAAcB7gAZA9cAHBwcAAAJAAAGBgAAAwKIAAMF7AAGABoArGUYACm84ACyaAcAfJcaAAYA8gAjDeUAg6cOABdW+AAHBwcAPUmOABAA+wAJAPMAGQkBAAUA6wAFBQUAAATgAAMACwD+/v4ADrL/AAAAAwA3FgUAAQcAAAsBAAADAwMAs7OzAA0D4wAfHx8ACwfYAAABAQABAQEAAgAEAI2gCwAEAPUAAwHqAA4G7AA5OTkAAQANAAIADQAbGxsAAAECAIitAAADrf8ABwANAAAABQADAAUAAwQCAAADBQAZGRkAAAIAAAECAACblRIAAgIAAK9jIgDW1tYAAAAGAJCmBACNrQEAAwAGAI6tAQAECAAAmpqaAAIGBgAOCAAABwLhABu92wALEQAABAQEAAZc7QAFAPgAGxHHAA4EBAACAgIAtl0kAPv7+wAACAIAAQAIABYgjQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFQAAAAAAAAAAAAAAAAAAAAAAKjMHVCpUJAAnPAdUAAAAAFQeJFZJAE8wQk8lAAAAAAAbAAAAACoAACoAAAAAAAAAAAAANzEiUCM9AAAAAAAAAzlTHVcFGhRELBNAQwAAAB82OwxNBhpZKUtFNQ8ZAAAyDgQETkwaFj9VIQkNQQAAAAAAEEcYGgoISkgAAAAAAAAAACtGJhoKFy4vAAAAAAAAAAAANCYaCgEaHAAAAAAAAAAAADQmGgoBGgsAAAAAAAAAAAA0JhoKURpSAAAAAAAAAAAANCYaLQISWAAAAAAAAAAAADgoETo9IAAAAAAAVCoqKioqPioqKioqKioqJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+        rel="icon" type="image/x-icon" />
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #map {
+            width: 60%;
+            height: 100%;
+            float: left;
+        }
+        
+        #text {
+            height: 100%;
+            width: 35%;
+            font: Lucida;
+            font-size: xx-large;
+            float: right;
+        }
+        
+        #country {
+            margin-top: 15px;
+            margin-bottom: 25px;
+        }
+        
+        #geojsontext {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 20px;
+            width: 90%;
+            height: 80%;
+        }
+        
+        .swal-modal {
+            background-color: rgba(63, 255, 106, 0.69);
+            border: 3px solid white;
+        }
+        
+        #submit {
+            margin: 20px;
+        }
+        /* More table styling */
+        /* https://www.w3schools.com/css/tryit.asp?filename=trycss_table_fancy */
+        
+        #history {
+            border-collapse: collapse;
+            visibility: hidden;
+        }
+        
+        #history td,
+        #history th {
+            border: 1px solid #ddd;
+            padding: 8px;
+            margin: 0px;
+        }
+        
+        #history tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        #history tr:hover {
+            background-color: #ddd;
+        }
+        
+        #history th {
+            padding-top: 6px;
+            padding-bottom: 6px;
+            text-align: left;
+            background-color: #04AA6D;
+            color: white;
+            margin: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id="text">
+        <label for="country">Choose A Country As Your Guess:</label>
+
+        <select name="country" id="country">
+            <option value="volvo">Volvo</option>
+            <option value="saab">Saab</option>
+            <option value="mercedes">Mercedes</option>
+            <option value="audi">Audi</option>
+        </select>
+        <div>
+            <table id="history">
+                <row>
+                    <th>Country</th>
+                    <th>Center Point</th>
+                    <th>Distance to Target</th>
+                </row>
+
+            </table>
+        </div>
+
+        <input type="button" class="btn warning" id="submit" value="Submit">
+        <hr>
+        <div class="container">
+            <label class="title">Directions</label>
+            <p>You are trying to guess a country</p>
+            <p>The country you guess will fill up with a color</p>
+            <p>The color associated represests how far it is from the correct country</p>
+            <p>Goodluck!</p>
+        </div>
+        <div class="container dark">
+            <label class="title">Colors' Meaning</label>
+            <p>Blue = Very far</p>
+            <p>Purple = Not as far</p>
+            <p>Yellow = Close</p>
+            <p>Orange = Closer</p>
+            <p>Red = Very CLOSE</p>
+            <p>Green = You Guessed IT!</p>
+        </div>
+        <div class="progress error">
+            <div class="bar" style="width: 40%"></div>
+            <div class="subtitle">HARD MODE</div>
+        </div>
+        <div class="progress indeterminate">
+            <div class="bar"></div>
+            <div class="subtitle">"RUNNING"</div>
+        </div>
+        <h1 style="margin-top: 3em" play>Joshua Williams 4553-Spatial DS</h1>
+    </div>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <script>
+        myStorage = window.localStorage;
+
+
+        window.onload = function() {
+            getNames();
+
+        };
+
+
+        let correct = null
+
+
+        var guesses = []
+
+
+        function getNames() {
+            let url = "http://127.0.0.1:8080/country_names/";
+            fetch(url)
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(input) {
+
+
+                    var select = document.getElementById("country");
+
+                    countries = input['countries'].sort();
+
+                    select.innerHTML = "";
+
+                    for (var i = 0; i < countries.length; i++) {
+                        var Create_Element = document.createElement("option");
+                        var opt = input['countries'][i];
+                        Create_Element.textContent = opt;
+                        Create_Element.value = opt;
+                        select.appendChild(Create_Element);
+                    }
+
+                    correct_countries = countries[Math.floor(Math.random() * countries.length)]
+                });
+        }
+
+
+        function main() {
+            var element = document.getElementById("country");
+
+            var name = element.options[element.selectedIndex].text;
+
+            var color = null
+            alert("Country: " + correct_countries)
+            swal({
+                title: "You've guessed\n" + JSON.stringify(guesses),
+                button: "Done"
+
+            });
+            if (name == correct_countries) {
+
+                color = '#00FF00'
+                document.getElementById("country").disabled = true;
+                document.getElementById("submit").disabled = true;
+                guesses.push([name, 0])
+                swal({
+                    title: "CONGRATULATIONS YOU WON",
+                    text: "If you want to play again refresh the page!",
+                    icon: "success"
+                });
+            } else {
+                //get the api call for the distance between the two countries
+                fetch('http://127.0.0.1:8080/distance/' + name + '/' + correct_countries)
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(input) {
+                        Distance = Math.floor(input['distance'])
+
+                        if (Distance <= 10) {
+                            color = "#FF0000"
+                        } else if (Distance <= 30) {
+                            color = "#FF7400"
+                        } else if (Distance <= 60) {
+                            color = "#EFC024"
+                        } else if (Distance <= 80) {
+                            color = "#C3B1E1"
+                        } else {
+                            color = "#66FFFF"
+                        }
+
+                        guesses.push([name, Distance])
+                    });
+
+
+            }
+
+            let url = "http://127.0.0.1:8080/poly/" + name;
+
+            fetch(url)
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(input) {
+                    result = {
+                        "type": "FeatureCollection",
+                        "features": [{
+                            "type": "Feature",
+                            "properties": {},
+                            "geometry": {
+                                "type": "Polygon",
+                                "coordinates": [input['polygon']]
+                            }
+                        }]
+                    };
+                    let defaultStyle = {
+                        fillColor: color,
+                        weight: 1,
+                        opacity: 1,
+                        color: '#66FFFF',
+                        fillOpacity: 1
+                    }
+
+                    L.geoJSON(result, {
+                        style: defaultStyle
+                    }).addTo(layers);
+
+                    guesses.sort(([a, b], [c, d]) => b - d);
+
+                    document.getElementById("guesses").innerHTML = "";
+
+                    for (i = 0; i < guesses.length; i++) {
+                        var select = document.getElementById("guesses");
+                        var el = document.createElement("li");
+                        el.textContent = guesses[i][0];
+                        el.value = guesses[i][0];
+                        select.appendChild(el);
+                    }
+
+                    selectbox = document.getElementById("country")
+                    var i;
+                    for (i = 0; i < selectbox.options.length; i++) {
+                        if (selectbox.options[i].selected) {
+                            selectbox.remove(i);
+                        }
+                    }
+                });
+
+        }
+
+
+        let bound = [
+            [
+                [90, 180],
+                [-90, -180]
+            ]
+        ]
+
+        let map = L.map("map", {
+            maxBounds: bound,
+            maxBoundsViscosity: 1.0
+        }).setView([0, 0], 0);
+
+        map.setMinZoom(2)
+        map.setMaxZoom(8)
+
+
+        L.tileLayer(
+            "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_nolabels/{z}/{x}/{y}.png", {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attribution/">CartoDB</a>',
+                subdomains: "abcd",
+                maxZoom: 19,
+            }
+        ).addTo(map);
+
+        // Add Layer Group
+        let layers = L.layerGroup().addTo(map);
+
+
+        document.getElementById("submit").addEventListener("click", main);
+    </script>
+</body>
+
+</html>

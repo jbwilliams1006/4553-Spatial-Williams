@@ -1,21 +1,19 @@
 import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
-import pyproj
-import random
-import shapely.geometry
-import sys
+import json
+from pyproj import Transformer
 
-from geovoronoi import voronoi_regions_from_coords, points_to_coords
-from geovoronoi.plotting import subplot_for_map, plot_voronoi_polys_with_points_in_area
+
 from shapely.ops import unary_union
+from geovoronoi.plotting import subplot_for_map, plot_voronoi_polys_with_points_in_area
+from geovoronoi import voronoi_regions_from_coords, points_to_coords
 
-# from shapely.geometry import box, Polygon, LineString, Point
 from shapely.ops import transform
 
-
-debug = False
+debug = True
 spatIndex = None
+
 
 def loadGeoDataFrame(file, printHead=False):
     """Load a geojson file into a geoDataFrame
@@ -90,6 +88,7 @@ def createVoronoi(boundary, cities):
     Returns:
         All the datastructures needed to plot the voronoi diagram. Most important for us however,
         is the "regionPolys" needed for us to determine which ufos are each of the polygons.
+
         cityCoords    -  the seeds converted to proper coordinate system for the diagram
         boundaryShape -  the boundary simplified or converted to a single outer ring polygon
         regionPolys   -  a dict of the internal polygons created around each seed
@@ -173,26 +172,6 @@ def getPolygonUfos(ufos, poly):
     return {"indexes": indexes, "Coordinates": coordinates}
 
 
-def reProject(geostructure, src="3395", dest="4326"):
-    """Transfrom (change projection) of some shapely shape. Used for shapes and not whole dataFrames
-       since the `to_crs()` method is for geoDataFrames.
-    Params:
-        geoStructure (geoDataFrame) : some geo dataframe to be re-projected
-        src (int/string)            : the source projection (what it is)
-        dest (int/string)           : the destination projection (what it needs to be)
-    Returns:
-        list of new coords
-    """
-    projection = pyproj.Transformer.from_proj(
-        pyproj.Proj(init=f"epsg:{src}"),  # source coordinate system
-        pyproj.Proj(init=f"epsg:{dest}"),  # destination coordinate system
-    )
-
-    reProjected = transform(projection.transform, geostructure)  # apply projection
-
-    return reProjected
-
-
 def getPolyCoords(poly):
     """Takes a shapely polygon and returns its xy coords making up the polygon.
     I used this to "check" my sanity when comparing different projections
@@ -207,42 +186,61 @@ def getPolyCoords(poly):
     return x, y
 
 
-if __name__ == "__main__":
 
-    # load the geojson files into geoDataFrames with projection 3395
-    cities = loadGeoDataFrame("cities.geojson")
-    ufos = loadGeoDataFrame("ufo_data.geojson")
-    usBorder = loadGeoDataFrame("us_nation_border.geojson")
+#loads cities
+city_geodatafrm = gpd.read_file("Assignments/P03/cities.geojson")
 
-    # print the bounding box for the US, but in 4326 (lon/lat format)
-    print(getBoundingBox(usBorder.to_crs("EPSG:4326")))
 
-    # show plots if debug == True
-    if debug:
-        plotBorderAndPoints(usBorder, cities)
-        plotBorderAndPoints(usBorder, ufos)
 
-    # create voronoi diagram. The function returns 4 things!
-    cityCoords, boundaryShape, regionPolys, regionPoints = createVoronoi(
-        usBorder, cities
-    )
+ufodata = pd.read_csv("Assignments/P03/ufo_data.csv")
 
-    # This function creates the spatial index by inserting the ufo
-    # geoDataFrame into the spatIndex (keeping with the projection epsg:3395)
-    insertSpatIndex(ufos)
+pd.set_option('display.max_columns', None)
 
-    # generate a random number between 0 and 47 (an index for each polygon around our 48 cities)
-    randomPolyIndex = random.randint(0, len(regionPolys))
+#makes geopandas dataframe from ufo
+#crs projects points
+ufo_dataframe = gpd.GeoDataFrame(ufodata, geometry = 
+    gpd.points_from_xy(ufodata.lon, ufodata.lat), crs = "EPSG:4326")
+    
+ufo_dataframe = ufo_dataframe.to_crs(epsg =3395)
 
-    # using that random polygon from the voronoi diagram,  find all the UFO's in it using the
-    # spatial index we made.
-    results = getPolygonUfos(ufos, regionPolys[randomPolyIndex])
 
-    # using the results of our query with our polygon, make a dataframe so we can "plot" it
-    ufoPolyDF = makeGeoDataFrame(results)
+#opens shape file
+border = gpd.read_file("Assignments/P03/us_border_shp")
 
-    # Now plot the voronoi diagram
-    plotVoronoi(cityCoords, boundaryShape, regionPolys, regionPoints, "00_voronoi.jpg")
 
-    # and plot the random poly dataframe we created
-    plotBorderAndPoints(usBorder, ufoPolyDF, "00_randPointsPoly.jpg")
+fig, ax = plt.subplots(figsize =(12, 10))
+
+#plots border
+border.plot(ax=ax, color = "gray")
+
+
+city_geodatafrm.plot(ax=ax, markersize=2.5, color = "blue")
+ax.axis("off")
+plt.axis('equal')
+
+
+
+
+#Start voronoi creation
+border = border.to_crs(epsg=3395)
+city_proj = city_geodatafrm.to_crs(border.crs)
+
+#convert points to coords
+border_shape = unary_union(border.geometry)
+coords = points_to_coords(city_proj.geometry)
+# print(coords)
+
+#initialize the polygon
+polys, region_pts = voronoi_regions_from_coords(coords,border_shape)
+
+fig, ax = subplot_for_map(figsize= (12, 10))
+
+# plot polygon
+plot_voronoi_polys_with_points_in_area(ax, border_shape, polys, coords, region_pts)
+
+#create boundaries
+fig  = plt.gcf()
+
+#saves voronoi 
+fig.savefig('voronoi1.png')
+plt.show()
